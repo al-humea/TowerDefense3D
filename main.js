@@ -1,3 +1,5 @@
+import { purpleEnemy } from "./Enemy/Enemy.js";
+
 //canva setup
 let cnv = document.getElementById("screen");
 //renderer et camera
@@ -36,6 +38,9 @@ for (let i = 0; i < 10; i++){
         planeList.push(plane);
     }
 }
+
+//Enemies
+let enemy = new purpleEnemy(0, 0);
 
 //main
 let delta = 0;

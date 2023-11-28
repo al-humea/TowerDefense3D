@@ -1,3 +1,4 @@
+import * as THREE from './three.module.js'
 import { purpleEnemy } from "./Enemy/Enemy.js";
 
 //canva setup

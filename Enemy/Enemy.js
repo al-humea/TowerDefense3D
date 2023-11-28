@@ -1,3 +1,5 @@
+import {GLTFLoader} from "../GLTFLoader.js"
+
 class Enemy{
     constructor(x, y, checkpoints){
         this.x = x;

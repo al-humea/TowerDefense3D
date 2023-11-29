@@ -26,7 +26,9 @@ export class Map {
             }
         }
         this.spawn = this.planeList[80].position;
-        this.checkpoints = [this.planeList[87].position];
+        this.checkpoints = [this.planeList[87].position, this.planeList[47].position,
+                            this.planeList[42].position, this.planeList[12].position,
+                            this.planeList[19].position];
     }
     get spawn(){
         return (this.spawn);

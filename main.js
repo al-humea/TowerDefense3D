@@ -24,12 +24,24 @@ scene.add(helper);
 //map temporaire
 import {Map} from "./Map/map.js"
 const map = new Map(scene);
-const spawn = [map.spawn.position.x-0.15, map.spawn.position.z + 0.15];
+const spawn = [map.spawn.x-0.15, 0.3, map.spawn.z + 0.15];//xyz spawn
+const checkpoints = map.checkpoints;
+
+//debug
+const lineMat = new THREE.LineBasicMaterial({
+    color:0xFF0000,
+    linewidth:1,
+})
+let lineGeo = null;
+checkpoints.forEach((x)=>{
+    lineGeo = new THREE.BufferGeometry().setFromPoints([x, new THREE.Vector3(x.x, x.y+spawn[1], x.z)]);
+    scene.add(new THREE.Line(lineGeo, lineMat));
+});
 
 //Enemies
-import { purpleEnemy } from "./Enemy/Enemy.js";
+import { purpleEnemy } from "./Enemy/enemy.js";
 const enemies = [];
-let enemy = new purpleEnemy(spawn[0], spawn[1], scene);
+let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene);
 enemies.push(enemy);
 
 //main

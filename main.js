@@ -45,8 +45,9 @@ let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene);
 enemies.push(enemy);
 
 //Towers
-import { CannonTower } from './Tower/tower.js';
-let towerTest = new CannonTower(3.5, -2.5, scene); //tmp debug tower
+import { CannonTower, MageTower } from './Tower/tower.js';
+let towerCannonTest = new CannonTower(3.5, -2.5, scene); //tmp debug tower
+let towerMageTest = new MageTower(-3.5, -0.5, scene); //tmp debug tower
 
 //main
 let delta = 0;

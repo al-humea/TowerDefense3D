@@ -1,17 +1,17 @@
 /*
 TODO :
 -- Class 
-- [static] Liste des tours
 - [static] Scale global
 - Position dans la grille
 - Cooldown
 - MaxCooldown
 - Portée
+- Cible
 
 -- Class CannonTower extends Tower
 - loader
--> update(dt) -> s'occupe d'updater toutes les tours
-- targetCheck(dt) -> s'occupe de check / visé un ennemi
+-> update(dt, enemies) -> s'occupe d'updater toutes les tours
+- targetCheck(dt, enemies) -> s'occupe de check / visé un ennemi
 
 -- Class MageTower extends Tower
 - loader
@@ -37,12 +37,14 @@ import {GLTFLoader} from "../GLTFLoader.js";
 import * as THREE from "../three.module.js";
 
 class Tower {
+    static list = [];
     static scale = 0.95;
     constructor(x, z, cd, range) {
         this.pos = new THREE.Vector2(x, z);
         this.cooldown = 0;
         this.maxCooldown = cd;
         this.range = range;
+        this.target = null;
     }
 }
 
@@ -78,6 +80,39 @@ export class CannonTower extends Tower {
                 scene.add(gltf.scene);
         });
     }
+
+    update(dt, enemies) {
+        // takes care of fire cooldown
+        if (this.cooldown < this.maxCooldown)
+            this.cooldown += dt;
+        else if (this.cooldown > this.maxCooldown)
+            this.cooldown = this.maxCooldown;
+
+        // check for target
+        this.targetCheck(dt, enemies);
+    }
+
+    targetCheck(dt, enemies) {
+        // if already got target
+        if (this.target) {
+            if (this.cooldown >= this.maxCooldown) {
+                // construct projectile and "shoot"
+            }
+            // rotate the cannon in direction to the target
+            this.cannon.lookAt(this.cannon.position.x + (this.cannon.position.x-this.target.position.x),
+                               this.cannon.position.y,
+                               this.cannon.position.z + (this.cannon.position.z-this.target.position.z));
+        }
+        // else, search for target within range
+        else {
+            enemies.some(enemy => {
+                if ((this.pos.distanceTo(new THREE.Vector2(enemy.x, enemy.y))) < this.range) {
+                    this.target = enemy;
+                    return true;
+                }
+            });
+        }
+    }
 }
 
 export class MageTower extends Tower {
@@ -96,6 +131,47 @@ export class MageTower extends Tower {
                 //add model to scene
                 scene.add(gltf.scene);
         });
+        // bullet visible even before firing, "growing" above the tower depending of its cooldown
+        let geo = new THREE.DodecahedronGeometry(0.2);
+        let mat = new THREE.MeshStandardMaterial({color:"white"});
+        this.bullet = new THREE.Mesh(geo, mat);
+        this.bullet.position.set(x, 1.85, z);
+        scene.add(this.bullet);
+    }
+
+    update(dt, enemies) {
+        // takes care of fire cooldown
+        if (this.cooldown < this.maxCooldown)
+            this.cooldown += dt;
+        else if (this.cooldown > this.maxCooldown)
+            this.cooldown = this.maxCooldown;
+
+        // bullet grow in relation to the cooldown
+        if (this.cooldown > 1)
+            this.bullet.geometry.radius = (this.cooldown-1)*0.2;
+        else
+            this.bullet.geometry.radius = 0;
+
+        // check for target
+        this.targetCheck(dt, enemies);
+    }
+
+    targetCheck(dt, enemies) {
+        // if already got target
+        if (this.target) {
+            if (this.cooldown >= this.maxCooldown) {
+                // construct projectile and "shoot"
+            }
+        }
+        // else, search for target within range
+        else {
+            enemies.some(enemy => {
+                if ((this.pos.distanceTo(new THREE.Vector2(enemy.x, enemy.y))) < this.range) {
+                    this.target = enemy;
+                    return true;
+                }
+            });
+        }
     }
 }
 

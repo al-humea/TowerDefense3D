@@ -5,7 +5,6 @@ export class Map {
     planeWhiteMat = new THREE.MeshStandardMaterial ({color:"white"});
     planeRedMat = new THREE.MeshStandardMaterial ({color:"grey"});
     planeList = [];
-    checkpoints = [];
     spawn = [0, 0];
     constructor(scene){
         this.scene = scene;
@@ -32,8 +31,5 @@ export class Map {
     }
     get spawn(){
         return (this.spawn);
-    }
-    get checkpoints(){
-        return (this.checkpoints);
     }
 }

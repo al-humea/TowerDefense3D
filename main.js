@@ -41,7 +41,7 @@ checkpoints.forEach((x)=>{
 //Enemies
 import { purpleEnemy } from "./Enemy/enemy.js";
 const enemies = [];
-let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene);
+let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene, checkpoints);
 enemies.push(enemy);
 
 //main

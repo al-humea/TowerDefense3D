@@ -46,8 +46,6 @@ enemies.push(enemy);
 
 //Towers
 import { CannonTower, MageTower } from './Tower/tower.js';
-let towerCannonTest = new CannonTower(3.5, -2.5, scene); //tmp debug tower
-let towerMageTest = new MageTower(-3.5, -0.5, scene); //tmp debug tower
 
 //main
 let delta = 0;

@@ -1,42 +1,3 @@
-/*
-TODO :
--- Class 
-- [static] Scale global
-- Position dans la grille
-- Cooldown
-- MaxCooldown
-- Portée
-- Cible
-
--- Class CannonTower extends Tower
-- loader
-- scene
-- cannon
--> update(dt, enemies) -> s'occupe d'updater toutes les tours
-- targetCheck(dt, enemies) -> s'occupe de check / visé un ennemi
-
--- Class MageTower extends Tower
-- loader
-- scene
--> update(dt) -> s'occupe d'updater toutes les tours
-- targetCheck(dt) -> s'occupe de check / visé un ennemi
-
-
--- Class Projectile
-- [static] Liste des Projectiles
-- [static] Liste des géométries pour les différents projectiles
-- [static] Liste des Matériaux pour les différents projectiles
-- Type projectile (0 -> Cannon, 1 -> Mage)
-- Mesh
-- Cible
-- Courbe bézier (cubic pour cannon, linear pour mage)
-- Progression à la cible (0 -> 1)
-- Vitesse projectile (temps en seconde pour atteindre la cible)
-- Dégâts
-- update(dt) -> progression vers la cible
-
-*/
-
 import {GLTFLoader} from "../GLTFLoader.js";
 import * as THREE from "../three.module.js";
 
@@ -75,7 +36,7 @@ export class CannonTower extends Tower {
             function (gltf){
                 //change model coords
                 gltf.scene.position.set(x, 0.75*Tower.scale, z);
-                gltf.scene.scale.multiplyScalar(Tower.scale);
+                gltf.scene.scale.multiplyScalar(Tower.scale*1.5);
                 //shadow casting on scene
                 gltf.scene.traverse((node)=>{
                     if (node.isMesh) node.castShadow = true;
@@ -163,10 +124,10 @@ export class MageTower extends Tower {
             this.bullet.geometry.radius = 0;
 
         // check for target
-        this.targetCheck(dt, enemies);
+        this.targetCheck(enemies);
     }
 
-    targetCheck(dt, enemies) {
+    targetCheck(enemies) {
         // if already got target
         if (this.target) {
             // fire when cooldown is up
@@ -199,10 +160,11 @@ class Projectile {
                 this.damage = 10; //tmp value
                 this.speed = 1;
                 let offsetDirection = (new THREE.Vector2(startPos.x, startPos.z).sub(new THREE.Vector2(target.x, target.z))).normalize();
+                let distance = new THREE.Vector2(startPos.x, startPos.z).distanceTo(new THREE.Vector2(target.x, target.z));
                 this.curve = new THREE.CubicBezierCurve3(
-                    new THREE.Vector3(startPos),
-                    new THREE.Vector3(target.x+offsetDirection.x, target.y+1, target.z+offsetDirection.y),
-                    new THREE.Vector3(target.x, target.y+1, target.z),
+                    startPos.clone(),
+                    new THREE.Vector3(target.x + offsetDirection.x/3*distance, target.y+1 + 0.33*distance, target.z + offsetDirection.y/3*distance),
+                    new THREE.Vector3(target.x, target.y+1 + 0.33*distance, target.z),
                     new THREE.Vector3(target.x, target.y, target.z)
                 )
                 break;
@@ -210,7 +172,7 @@ class Projectile {
                 this.damage = 20; //tmp value
                 this.speed = 0.5;
                 this.curve = new THREE.LineCurve3(
-                    new THREE.Vector3(startPos),
+                    startPos.clone(),
                     new THREE.Vector3(target.x, target.y, target.z)
                 )
                 break;

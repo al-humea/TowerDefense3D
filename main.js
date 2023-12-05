@@ -1,7 +1,9 @@
 import * as THREE from './three.module.js'
 import { OrbitControls } from './OrbitControls.js';
+
 //canva setup
 const cnv = document.getElementById("screen");
+
 //renderer et camera
 const renderer = new THREE.WebGLRenderer({canvas:cnv, antialiasing:true});
 renderer.shadowMap.enabled = true;
@@ -12,6 +14,7 @@ camera.position.y = 5;
 camera.rotation.x = THREE.MathUtils.degToRad(-45);
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
+
 //lumières
 const directionalLight = new THREE.DirectionalLight(0xffffff, 4.0);
 directionalLight.position.y = 4;
@@ -39,7 +42,7 @@ checkpoints.forEach((x)=>{
 });
 
 //Enemies
-import { purpleEnemy } from "./Enemy/enemy.js";
+import { purpleEnemy} from "./Enemy/enemy.js";
 const enemies = [];
 let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene, checkpoints);
 enemies.push(enemy);
@@ -48,7 +51,7 @@ enemies.push(enemy);
 let delta = 0;
 let last_time = 0;
 function display(time){
-    delta = time - last_time;
+    delta = (time - last_time) * 0.001;//to_s
     last_time = time;
     //update enemies
     enemies.forEach((e)=>{

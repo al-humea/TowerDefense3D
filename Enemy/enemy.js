@@ -2,19 +2,33 @@ import {GLTFLoader} from "../GLTFLoader.js"
 import * as THREE from "../three.module.js"
 
 class Enemy{
-    constructor(x, y, z, checkpoints){
+    constructor(x, y, z, checkpoints, speed){
+        this.internal_clock = 0.0;
         this.model;
+        this.speed = speed;
+        this.loaded = false;
         this.pos = new THREE.Vector3(x, y, z);
-        this.checkpoints = checkpoints;
-        this.target = checkpoints[0];
+        this.checkpoints = checkpoints.map((e)=> new THREE.Vector3(e.x, y, e.z));
         this.life = 100;
+        this.direction = new THREE.Vector3();
     }
-    async move(delta){
-        let angle = Math.atan2(this.pos.z - this.target.z, this.pos.x- this.target.x);
-        let velx = Math.cos(angle) * delta;
-        let velz = Math.sin(angle) * delta;
-        this.pos.x -= velx;
-        this.pos.z -= velz;
+    animate(delta){
+        this.internal_clock += delta;
+        this.pos.setY(Math.sin(this.internal_clock * 5) * 0.025 + 0.35);
+    }
+    move(delta){
+        //if not loaded or no more checkpoints stop moving
+        if (!this.loaded || this.checkpoints.length == 0)
+            return ;
+        this.animate(delta);
+        this.direction.subVectors(this.checkpoints[0], this.pos).normalize();
+        this.pos.addScaledVector(this.direction, delta * this.speed);
+        if (this.pos.distanceTo(this.checkpoints[0]) < 0.1){
+            this.checkpoints.shift();
+            if (!this.checkpoints)
+                console.log("end");
+        }
+        this.model.position.set(this.pos.x, this.pos.y, this.pos.z);
     }
     takedmg(dmg){
         console.log("Enemy took dmgs");
@@ -24,7 +38,7 @@ class Enemy{
 
 export class purpleEnemy extends Enemy{
     constructor(x, y, z, scene, checkpoints =[]){
-        super(x, y, z, checkpoints);
+        super(x, y, z, checkpoints, 0.5);
         this.loader = new GLTFLoader();
         this.loader.load("./Enemy/enemy_ufoPurple.glb",
             (gltf)=>{
@@ -40,6 +54,7 @@ export class purpleEnemy extends Enemy{
                 });
                 //add model to scene
                 scene.add(gltf.scene);
+                this.loaded = true;
         });
     }
 }

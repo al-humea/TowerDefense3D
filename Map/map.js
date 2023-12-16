@@ -1,4 +1,87 @@
 import * as THREE from '../three.module.js'
+
+/*
+export class Map {
+
+  constructor(scene) {
+    this.scene = scene;
+    this.tiles = [];
+  }
+
+  async init() {
+
+    // Load tile assets asynchronously
+    await this.loadTiles(); 
+
+    // Cache tile geometries
+    this.createTileGeometries();
+
+    // Add tiles to scene once loaded
+    this.addTilesToScene();
+  }
+
+  // Map data
+  mapData = [
+    [0, 1, 0],
+    [1, 2, 1],
+    [0, 1, 0] 
+  ];
+
+  // Tile types
+  tileTypes = {
+    0: 'snow',
+    1: 'snowSquare',
+    2: 'snowStraight'
+  };
+
+  async loadTiles() {
+    this.tiles = await Promise.all(
+      Object.values(this.tileTypes).map(type => {
+        return this.loadTile(type)  
+      })
+    );
+  }
+
+  async loadTile(type) {
+    return new THREE.GLTFLoader().load(`${type}.glb`, this.scene);
+  }
+
+createTileGeometries() {
+  this.tiles.forEach(tile => {
+    tile.geometry = new THREE.BufferGeometry().fromGeometry(tile.geometry);
+  });
+}
+  addTilesToScene() {
+
+    for (let y = 0; y < this.mapData.length; y++) {
+      for (let x = 0; x < this.mapData[y].length; x++) {
+
+        const tile = this.getTile(this.mapData[y][x]);
+
+        // Add to container for batch update
+        this.tilesContainer.add(tile);
+
+      }
+    }
+
+    // Add container to scene
+    this.scene.add(this.tilesContainer);
+
+  }
+
+  get spawn() {
+    return this.tiles[0].position;
+  }
+
+  getTile(type) {
+    return this.tiles[this.tileTypes[type]];
+  }
+
+}
+
+*/
+
+
 // // Checkpoints ici ou bien dans d
 // export class Map {
 // // Map data 

@@ -186,7 +186,7 @@ export class MageTower extends Tower {
     }
 }
 
-class Projectile {
+export class Projectile {
     static list = [];
     static geos = [new THREE.SphereGeometry(0.1), new THREE.DodecahedronGeometry(0.2)]
     static mats = [new THREE.MeshStandardMaterial ({color:"black"}), new THREE.MeshStandardMaterial ({color:"white"})]

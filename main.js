@@ -57,9 +57,10 @@ const enemies = [];
 const spawner = new Spawner(scene, enemies, spawn, midCheckpoints, topCheckpoints, botCheckpoints);
 
 //Towers
-import { CannonTower, MageTower } from './Tower/tower.js';
-let towerCannonTest = new CannonTower(3.5, -2.5, scene); //tmp debug tower
-let towerMageTest = new MageTower(-3.5, -0.5, scene); //tmp debug tower
+import { Projectile, CannonTower, MageTower } from './Tower/tower.js';
+const towers = [];
+towers.push(new MageTower(-3.5, -0.5, scene)); //tmp debug tower
+towers.push(new CannonTower(3.5, -2.5, scene));
 
 //main
 let delta = 0;
@@ -69,10 +70,10 @@ function display(time){
     last_time = time;
     //update enemies list and move enemies
     spawner.spawn(delta);
-    enemies.forEach((e)=>{
-        e.move(delta);
-    });
+    enemies.forEach((e)=>e.move(delta));
     //update towers
+    towers.forEach((e)=>e.update(delta, enemies));
+    Projectile.list.forEach((e)=>e.update(delta));
     //update projectiles
     //disp gui
     renderer.render(scene, camera);

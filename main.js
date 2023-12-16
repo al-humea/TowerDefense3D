@@ -28,32 +28,41 @@ scene.add(helper);
 import {Map} from "./Map/map.js"
 const map = new Map(scene);
 const spawn = [map.spawn.x-0.15, 0.3, map.spawn.z + 0.15];//xyz spawn
-const checkpoints = map.checkpoints;
+const midCheckpoints = map.checkpoints;
+const topCheckpoints = midCheckpoints.map((x, i)=>{
+  if (i == 1 || i == 2)
+    return new THREE.Vector3(x.x+0.25, x.y, x.z+0.25)
+  return new THREE.Vector3(x.x+0.25, x.y, x.z-0.25)
+});
+const botCheckpoints = midCheckpoints.map((x, i)=>{
+  if (i == 1 || i == 2)
+    return new THREE.Vector3(x.x-0.25, x.y, x.z-0.25)
+  return new THREE.Vector3(x.x-0.25, x.y, x.z+0.25)
+});
 
-//debug
+//debug showing middlecheckpoints
 const lineMat = new THREE.LineBasicMaterial({
     color:0xFF0000,
     linewidth:1,
 })
 let lineGeo = null;
-checkpoints.forEach((x)=>{
+midCheckpoints.forEach((x)=>{
     lineGeo = new THREE.BufferGeometry().setFromPoints([x, new THREE.Vector3(x.x, x.y+spawn[1], x.z)]);
     scene.add(new THREE.Line(lineGeo, lineMat));
 });
 
 //Enemies
-import { purpleEnemy} from "./Enemy/enemy.js";
+import { Spawner } from "./Enemy/enemy.js";
 const enemies = [];
-let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene, checkpoints);
-enemies.push(enemy);
-
+const spawner = new Spawner(scene, enemies, spawn, midCheckpoints, topCheckpoints, botCheckpoints);
 //main
 let delta = 0;
 let last_time = 0;
 function display(time){
     delta = (time - last_time) * 0.001;//to_s
     last_time = time;
-    //update enemies
+    //update enemies list and move enemies
+    spawner.spawn(delta);
     enemies.forEach((e)=>{
         e.move(delta);
     });

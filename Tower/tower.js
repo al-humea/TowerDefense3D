@@ -166,6 +166,7 @@ export class Projectile {
     constructor(type, target, scene, startPos) {
         this.type = type;
         this.target = target;
+        this.targetLastPos = target.pos.clone();
         this.progress = 0;
         switch (type) {
             case 0: // Cannon
@@ -204,6 +205,23 @@ export class Projectile {
         // if the target has been defeated by another entity, make the bullet end point be at y=0, to crash on the ground (cannon only)
         if (this.target == null && this.curve.v3.y != 0 && this.type == 0) {
             this.curve.v3.y = 0;
+        }
+        // update curve to take in account enemy movement
+        switch (this.type) {
+                case 0: // Cannon
+                if (this.target != null) {
+                    let offSetPos = this.target.pos.clone().sub(this.targetLastPos);
+                    this.curve.v1.add(offSetPos);
+                    this.curve.v2.add(offSetPos);
+                    this.curve.v3.add(offSetPos);
+                    this.targetLastPos.copy(this.target.pos);
+                }
+                break;
+            case 1: // Mage
+                if (this.target != null) {
+                    this.curve.v2.copy(this.target.pos);
+                }
+                break;
         }
         this.progress += dt / this.speed;
         this.mesh.position.copy(this.curve.getPointAt(this.progress));

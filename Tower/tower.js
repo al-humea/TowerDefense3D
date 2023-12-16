@@ -1,42 +1,3 @@
-/*
-TODO :
--- Class 
-- [static] Scale global
-- Position dans la grille
-- Cooldown
-- MaxCooldown
-- Portée
-- Cible
-
--- Class CannonTower extends Tower
-- loader
-- scene
-- cannon
--> update(dt, enemies) -> s'occupe d'updater toutes les tours
-- targetCheck(dt, enemies) -> s'occupe de check / visé un ennemi
-
--- Class MageTower extends Tower
-- loader
-- scene
--> update(dt) -> s'occupe d'updater toutes les tours
-- targetCheck(dt) -> s'occupe de check / visé un ennemi
-
-
--- Class Projectile
-- [static] Liste des Projectiles
-- [static] Liste des géométries pour les différents projectiles
-- [static] Liste des Matériaux pour les différents projectiles
-- Type projectile (0 -> Cannon, 1 -> Mage)
-- Mesh
-- Cible
-- Courbe bézier (cubic pour cannon, linear pour mage)
-- Progression à la cible (0 -> 1)
-- Vitesse projectile (temps en seconde pour atteindre la cible)
-- Dégâts
-- update(dt) -> progression vers la cible
-
-*/
-
 import {GLTFLoader} from "../GLTFLoader.js";
 import * as THREE from "../three.module.js";
 
@@ -94,28 +55,35 @@ export class CannonTower extends Tower {
             this.cooldown = this.maxCooldown;
 
         // check for target
-        this.targetCheck(dt, enemies);
+        this.targetCheck(enemies);
     }
 
-    targetCheck(dt, enemies) {
+    targetCheck(enemies) {
         // if already got target
         if (this.target) {
-            // fire when cooldown is up
-            if (this.cooldown >= this.maxCooldown) {
-                let offsetDirection = (new THREE.Vector2(this.target.x, this.target.z).sub(new THREE.Vector2(this.pos.x, this.pos.y))).normalize();
-                let fireProjectile = new Projectile(0, this.target, this.scene, new THREE.Vector3(this.pos.x + offsetDirection.x*0.2,
-                                                                                      0.8,
-                                                                                      this.pos.y + offsetDirection.y*0.2));
+            // check if target out of range
+            if ((this.pos.distanceTo(new THREE.Vector2(this.target.pos.x, this.target.pos.z))) >= this.range) {
+                this.target = null;
             }
-            // rotate the cannon in direction to the target
-            this.cannon.lookAt(this.cannon.position.x + (this.cannon.position.x-this.target.position.x),
-                               this.cannon.position.y,
-                               this.cannon.position.z + (this.cannon.position.z-this.target.position.z));
+            else {
+                // fire when cooldown is up
+                if (this.cooldown >= this.maxCooldown) {
+                    let offsetDirection = (new THREE.Vector2(this.target.pos.x, this.target.pos.z).sub(new THREE.Vector2(this.pos.x, this.pos.y))).normalize();
+                    let fireProjectile = new Projectile(0, this.target, this.scene, new THREE.Vector3(this.pos.x + offsetDirection.x*0.2,
+                                                                                                      1.1,
+                                                                                                      this.pos.y + offsetDirection.y*0.2));
+                    this.cooldown = 0;
+                }
+                // rotate the cannon in direction to the target
+                this.cannon.lookAt(this.cannon.position.x + (this.cannon.position.x-this.target.pos.x),
+                                   this.cannon.position.y,
+                                   this.cannon.position.z + (this.cannon.position.z-this.target.pos.z));
+            }
         }
         // else, search for target within range
         else {
-            enemies.some(enemy => {
-                if ((this.pos.distanceTo(new THREE.Vector2(enemy.x, enemy.y))) < this.range) {
+            (enemies.toReversed()).some(enemy => {
+                if ((this.pos.distanceTo(new THREE.Vector2(enemy.pos.x, enemy.pos.z))) < this.range) {
                     this.target = enemy;
                     return true;
                 }
@@ -142,9 +110,7 @@ export class MageTower extends Tower {
                 scene.add(gltf.scene);
         });
         // bullet visible even before firing, "growing" above the tower depending of its cooldown
-        let geo = Projectile.geos[1];
-        let mat = Projectile.mats[1];
-        this.bullet = new THREE.Mesh(geo, mat);
+        this.bullet = new THREE.Mesh(Projectile.geos[1], Projectile.mats[1]);
         this.bullet.position.set(x, 1.85, z);
         scene.add(this.bullet);
     }
@@ -158,26 +124,33 @@ export class MageTower extends Tower {
 
         // bullet grow in relation to the cooldown
         if (this.cooldown > 1)
-            this.bullet.geometry.radius = (this.cooldown-1)*0.2;
+            this.bullet.scale.setScalar(this.cooldown-1);
         else
-            this.bullet.geometry.radius = 0;
+            this.bullet.scale.setScalar(0);
 
         // check for target
-        this.targetCheck(dt, enemies);
+        this.targetCheck(enemies);
     }
 
-    targetCheck(dt, enemies) {
+    targetCheck(enemies) {
         // if already got target
         if (this.target) {
-            // fire when cooldown is up
-            if (this.cooldown >= this.maxCooldown) {
-                let fireProjectile = new Projectile(0, this.target, this.scene, new THREE.Vector3(this.pos.x, 1.85, this.pos.y));
+            // check if target out of range
+            if ((this.pos.distanceTo(new THREE.Vector2(this.target.pos.x, this.target.pos.z))) >= this.range) {
+                this.target = null;
+            }
+            else {
+                // fire when cooldown is up
+                if (this.cooldown >= this.maxCooldown) {
+                    let fireProjectile = new Projectile(1, this.target, this.scene, new THREE.Vector3(this.pos.x, 1.85, this.pos.y));
+                    this.cooldown = 0;
+                }
             }
         }
         // else, search for target within range
         else {
-            enemies.some(enemy => {
-                if ((this.pos.distanceTo(new THREE.Vector2(enemy.x, enemy.y))) < this.range) {
+            (enemies.toReversed()).some(enemy => {
+                if ((this.pos.distanceTo(new THREE.Vector2(enemy.pos.x, enemy.pos.z))) < this.range) {
                     this.target = enemy;
                     return true;
                 }
@@ -197,45 +170,50 @@ export class Projectile {
         switch (type) {
             case 0: // Cannon
                 this.damage = 10; //tmp value
-                this.speed = 1;
+                this.speed = 0.8;
                 let offsetDirection = (new THREE.Vector2(startPos.x, startPos.z).sub(new THREE.Vector2(target.x, target.z))).normalize();
                 this.curve = new THREE.CubicBezierCurve3(
-                    new THREE.Vector3(startPos),
-                    new THREE.Vector3(target.x+offsetDirection.x, target.y+1, target.z+offsetDirection.y),
-                    new THREE.Vector3(target.x, target.y+1, target.z),
-                    new THREE.Vector3(target.x, target.y, target.z)
+                    startPos.clone(),
+                    new THREE.Vector3(target.pos.x+offsetDirection.x, target.pos.y+1, target.pos.z+offsetDirection.y),
+                    new THREE.Vector3(target.pos.x, target.pos.y+1, target.pos.z),
+                    new THREE.Vector3(target.pos.x, target.pos.y, target.pos.z)
                 )
                 break;
             case 1: // Mage
                 this.damage = 20; //tmp value
-                this.speed = 0.5;
+                this.speed = 0.3;
                 this.curve = new THREE.LineCurve3(
-                    new THREE.Vector3(startPos),
-                    new THREE.Vector3(target.x, target.y, target.z)
+                    startPos.clone(),
+                    new THREE.Vector3(target.pos.x, target.pos.y, target.pos.z)
                 )
                 break;
         }
         this.scene = scene;
         this.mesh = new THREE.Mesh(Projectile.geos[type], Projectile.mats[type]);
-        this.mesh.position.set(startPos);
-        this.scene.add(this.mesh);
-
+        this.mesh.position.copy(startPos);
+        scene.add(this.mesh);
+        
         Projectile.list.push(this);
     }
 
-    update(dt) {
+    static update(dt) {
+        Projectile.list.forEach((e)=>e.move(dt));
+    }
+
+    move(dt) {
         // if the target has been defeated by another entity, make the bullet end point be at y=0, to crash on the ground (cannon only)
-        if (target == null && this.curve.v3.y != 0 && this.type == 0) {
+        if (this.target == null && this.curve.v3.y != 0 && this.type == 0) {
             this.curve.v3.y = 0;
         }
         this.progress += dt / this.speed;
-        this.mesh.position.set(this.curve.getPointAt(this.progress));
+        this.mesh.position.copy(this.curve.getPointAt(this.progress));
         // if target reached
         if (this.progress >= 1) {
-            if (this.target)
-                // target.hit(this.damage) ?
-                Projectile.list.splice(Projectile.list.indexOf(this), 1);
-                this.scene.remove(this.mesh);
+            if (this.target) {
+                this.target.takedmg(this.damage)
+            }
+            Projectile.list.splice(Projectile.list.indexOf(this), 1);
+            this.scene.remove(this.mesh);
         }
     }
 }

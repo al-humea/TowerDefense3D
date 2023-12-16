@@ -73,7 +73,7 @@ function display(time){
     enemies.forEach((e)=>e.move(delta));
     //update towers
     towers.forEach((e)=>e.update(delta, enemies));
-    Projectile.list.forEach((e)=>e.update(delta));
+    Projectile.update(delta);
     //update projectiles
     //disp gui
     renderer.render(scene, camera);

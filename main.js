@@ -55,8 +55,6 @@ midCheckpoints.forEach((x)=>{
 import { Spawner } from "./Enemy/enemy.js";
 const enemies = [];
 const spawner = new Spawner(scene, enemies, spawn, midCheckpoints, topCheckpoints, botCheckpoints);
-let enemy = new purpleEnemy(spawn[0], spawn[1], spawn[2], scene);
-enemies.push(enemy);
 
 //Towers
 import { CannonTower, MageTower } from './Tower/tower.js';

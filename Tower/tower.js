@@ -211,7 +211,8 @@ export class Projectile {
                 case 0: // Cannon
                 if (this.target != null) {
                     let offSetPos = this.target.pos.clone().sub(this.targetLastPos);
-                    this.curve.v1.add(offSetPos);
+                    this.curve.v1.copy(this.target.pos);
+                    this.curve.v1.add(new THREE.Vector3(0, 1, 0));
                     this.curve.v2.add(offSetPos);
                     this.curve.v3.add(offSetPos);
                     this.targetLastPos.copy(this.target.pos);

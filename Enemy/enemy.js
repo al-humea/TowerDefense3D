@@ -39,7 +39,7 @@ class Enemy{
     if (this.life > 0)
       return 1;
     this.scene.remove(this.model);
-    this.enemies.splice(this.id, 1);
+    this.enemies[this.id] = null;
     return 0;
   }
 }

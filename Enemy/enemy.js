@@ -2,90 +2,96 @@ import {GLTFLoader} from "../GLTFLoader.js"
 import * as THREE from "../three.module.js"
 
 class Enemy{
-    constructor(x, y, z, scene, checkpoints, speed){
-        this.internal_clock = 0.0;
-        this.model;
-        this.scene = scene;
-        this.speed = speed;
-        this.loaded = false;
-        this.pos = new THREE.Vector3(x, y, z);
-        this.checkpoints = checkpoints.map((e)=> new THREE.Vector3(e.x, y, e.z));
-        this.life = 1;
-        this.direction = new THREE.Vector3();
-        this.randVariation = Math.random();
+  static index = 0;
+  constructor(x, y, z, scene, checkpoints, speed, enemies =[]){
+    this.internal_clock = 0.0;
+    this.id = this.index;
+    this.index++;
+    this.model;
+    this.scene = scene;
+    this.speed = speed;
+    this.enemies = enemies;
+    this.loaded = false;
+    this.pos = new THREE.Vector3(x, y, z);
+    this.checkpoints = checkpoints.map((e)=> new THREE.Vector3(e.x, y, e.z));
+    this.life = 1;
+    this.direction = new THREE.Vector3();
+    this.randVariation = Math.random();
+  }
+  animate(delta){
+    this.internal_clock += delta;
+    this.pos.setY(Math.sin(this.internal_clock * 5 * this.randVariation) * 0.025 + 0.35 );
+    this.model.rotation.y += delta * this.randVariation;
+  }
+  move(delta){
+    //if not loaded or no more checkpoints stop moving
+    if (!this.loaded || this.checkpoints.length == 0)
+      return ;
+    this.animate(delta);
+    this.direction.subVectors(this.checkpoints[0], this.pos).normalize();
+    this.pos.addScaledVector(this.direction, delta * this.speed);
+    if (this.pos.distanceTo(this.checkpoints[0]) < 0.1){
+      this.checkpoints.shift();
+      if (!this.checkpoints)
+        console.log("end");
     }
-    animate(delta){
-        this.internal_clock += delta;
-        this.pos.setY(Math.sin(this.internal_clock * 5 * this.randVariation) * 0.025 + 0.35 );
-        this.model.rotation.y += delta * this.randVariation;
-    }
-    move(delta){
-        //if not loaded or no more checkpoints stop moving
-        if (!this.loaded || this.checkpoints.length == 0)
-            return ;
-        this.animate(delta);
-        this.direction.subVectors(this.checkpoints[0], this.pos).normalize();
-        this.pos.addScaledVector(this.direction, delta * this.speed);
-        if (this.pos.distanceTo(this.checkpoints[0]) < 0.1){
-            this.checkpoints.shift();
-            if (!this.checkpoints)
-                console.log("end");
-        }
-        this.model.position.set(this.pos.x, this.pos.y, this.pos.z);
-    }
-    takedmg(dmg){
-        console.log("Enemy took dmgs ", dmg);
-        this.life -= dmg;
-        if (this.life <= 0)
-          console.log("dead");
-    }
+    this.model.position.set(this.pos.x, this.pos.y, this.pos.z);
+  }
+  takedmg(dmg){
+    this.life -= dmg;
+    if (this.life > 0)
+      return 1;
+    this.scene.remove(this.model);
+    this.enemies.splice(this.id, 1);
+    return 0;
+  }
 }
 
 class purpleEnemy extends Enemy{
-    constructor(x, y, z, scene, checkpoints =[]){
-        super(x, y, z, scene, checkpoints, 0.5);
-        this.life = 100;
-        this.loader = new GLTFLoader();
-        this.loader.load("./Enemy/enemy_ufoPurple.glb",
-            (gltf)=>{
-                //change model coords
-                this.model = gltf.scene;
-                gltf.scene.position.setY(y);
-                gltf.scene.scale.set(0.35, 0.35, 0.35);
-                gltf.scene.position.setX(x);
-                gltf.scene.position.setZ(z);
-                //shadow casting on scene
-                gltf.scene.traverse((node)=>{
-                    if (node.isMesh) node.castShadow = true;
-                });
-                //add model to scene
-                scene.add(gltf.scene);
-                this.loaded = true;
+  constructor(x, y, z, scene, checkpoints =[], enemies =[]){
+    super(x, y, z, scene, checkpoints, 0.7, enemies);
+    this.life = 100;
+    this.loader = new GLTFLoader();
+    this.loader.load("./Enemy/enemy_ufoPurple.glb",
+      (gltf)=>{
+        //change model coords
+        this.model = gltf.scene;
+        gltf.scene.position.setY(y);
+        gltf.scene.scale.set(0.35, 0.35, 0.35);
+        gltf.scene.position.setX(x);
+        gltf.scene.position.setZ(z);
+        //shadow casting on scene
+        gltf.scene.traverse((node)=>{
+            if (node.isMesh) node.castShadow = true;
         });
-    }
+        //add model to scene
+        scene.add(gltf.scene);
+        this.loaded = true;
+    });
+  }
 }
 
 class yellowEnemy extends Enemy{
-  constructor(x, y, z, scene, checkpoints =[]){
-      super(x, y, z, scene, checkpoints, 0.5);
-      this.life = 200;
-      this.loader = new GLTFLoader();
-      this.loader.load("./Enemy/enemy_ufoYellow.glb",
-          (gltf)=>{
-              //change model coords
-              this.model = gltf.scene;
-              gltf.scene.position.setY(y);
-              gltf.scene.scale.set(0.35, 0.35, 0.35);
-              gltf.scene.position.setX(x);
-              gltf.scene.position.setZ(z);
-              //shadow casting on scene
-              gltf.scene.traverse((node)=>{
-                  if (node.isMesh) node.castShadow = true;
-              });
-              //add model to scene
-              scene.add(gltf.scene);
-              this.loaded = true;
-      });
+  constructor(x, y, z, scene, checkpoints =[], enemies =[]){
+    super(x, y, z, scene, checkpoints, 0.5, enemies);
+    this.life = 200;
+    this.loader = new GLTFLoader();
+    this.loader.load("./Enemy/enemy_ufoYellow.glb",
+      (gltf)=>{
+        //change model coords
+        this.model = gltf.scene;
+        gltf.scene.position.setY(y);
+        gltf.scene.scale.set(0.35, 0.35, 0.35);
+        gltf.scene.position.setX(x);
+        gltf.scene.position.setZ(z);
+        //shadow casting on scene
+        gltf.scene.traverse((node)=>{
+            if (node.isMesh) node.castShadow = true;
+        });
+        //add model to scene
+        scene.add(gltf.scene);
+        this.loaded = true;
+    });
   }
 }
 
@@ -132,9 +138,9 @@ export class Spawner{
       spawnPos.z += 0.4;
     }
     if(enemyType == 1)
-      this.enemies.push(new purpleEnemy(...spawnPos, this.scene, checkpoints))
+      this.enemies.push(new purpleEnemy(...spawnPos, this.scene, checkpoints, this.enemies))
     else
-      this.enemies.push(new yellowEnemy(...spawnPos, this.scene, checkpoints));
+      this.enemies.push(new yellowEnemy(...spawnPos, this.scene, checkpoints, this.enemies));
   }
   spawn(delta){
     //si plus de vague fin

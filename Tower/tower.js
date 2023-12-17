@@ -170,7 +170,7 @@ export class Projectile {
         this.progress = 0;
         switch (type) {
             case 0: // Cannon
-                this.damage = 20; // tmp value
+                this.damage = 20; //tmp value
                 this.speed = 0.8;
                 let offsetDirection = (new THREE.Vector2(startPos.x, startPos.z).sub(new THREE.Vector2(target.x, target.z))).normalize();
                 this.curve = new THREE.CubicBezierCurve3(
@@ -181,7 +181,7 @@ export class Projectile {
                 )
                 break;
             case 1: // Mage
-                this.damage = 40; // tmp value
+                this.damage = 40; //tmp value
                 this.speed = 0.3;
                 this.curve = new THREE.LineCurve3(
                     startPos.clone(),

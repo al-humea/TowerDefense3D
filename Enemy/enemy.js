@@ -2,9 +2,10 @@ import {GLTFLoader} from "../GLTFLoader.js"
 import * as THREE from "../three.module.js"
 
 class Enemy{
-    constructor(x, y, z, checkpoints, speed){
+    constructor(x, y, z, scene, checkpoints, speed){
         this.internal_clock = 0.0;
         this.model;
+        this.scene = scene;
         this.speed = speed;
         this.loaded = false;
         this.pos = new THREE.Vector3(x, y, z);
@@ -33,14 +34,16 @@ class Enemy{
         this.model.position.set(this.pos.x, this.pos.y, this.pos.z);
     }
     takedmg(dmg){
-        console.log("Enemy took dmgs");
+        console.log("Enemy took dmgs ", dmg);
         this.life -= dmg;
+        if (this.life <= 0)
+          console.log("dead");
     }
 }
 
 class purpleEnemy extends Enemy{
     constructor(x, y, z, scene, checkpoints =[]){
-        super(x, y, z, checkpoints, 0.5);
+        super(x, y, z, scene, checkpoints, 0.5);
         this.life = 100;
         this.loader = new GLTFLoader();
         this.loader.load("./Enemy/enemy_ufoPurple.glb",
@@ -48,7 +51,7 @@ class purpleEnemy extends Enemy{
                 //change model coords
                 this.model = gltf.scene;
                 gltf.scene.position.setY(y);
-                gltf.scene.scale.set(0.35, 0.35, 0.35)
+                gltf.scene.scale.set(0.35, 0.35, 0.35);
                 gltf.scene.position.setX(x);
                 gltf.scene.position.setZ(z);
                 //shadow casting on scene
@@ -64,7 +67,7 @@ class purpleEnemy extends Enemy{
 
 class yellowEnemy extends Enemy{
   constructor(x, y, z, scene, checkpoints =[]){
-      super(x, y, z, checkpoints, 0.5);
+      super(x, y, z, scene, checkpoints, 0.5);
       this.life = 200;
       this.loader = new GLTFLoader();
       this.loader.load("./Enemy/enemy_ufoYellow.glb",
@@ -72,7 +75,7 @@ class yellowEnemy extends Enemy{
               //change model coords
               this.model = gltf.scene;
               gltf.scene.position.setY(y);
-              gltf.scene.scale.set(0.35, 0.35, 0.35)
+              gltf.scene.scale.set(0.35, 0.35, 0.35);
               gltf.scene.position.setX(x);
               gltf.scene.position.setZ(z);
               //shadow casting on scene

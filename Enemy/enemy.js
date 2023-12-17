@@ -30,11 +30,8 @@ class Enemy{
     this.animate(delta);
     this.direction.subVectors(this.checkpoints[0], this.pos).normalize();
     this.pos.addScaledVector(this.direction, delta * this.speed);
-    if (this.pos.distanceTo(this.checkpoints[0]) < 0.1){
+    if (this.pos.distanceTo(this.checkpoints[0]) < 0.1)
       this.checkpoints.shift();
-      if (!this.checkpoints)
-        console.log("end");
-    }
     this.model.position.set(this.pos.x, this.pos.y, this.pos.z);
   }
   takedmg(dmg){

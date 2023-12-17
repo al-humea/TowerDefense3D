@@ -71,7 +71,6 @@ function display(time){
     //update enemies list and move enemies
     spawner.spawn(delta);
     enemies.forEach((e)=>e.move(delta));
-    console.log(enemies);
     towers.forEach((e)=>e.update(delta, enemies));
     Projectile.update(delta);
     //update projectiles

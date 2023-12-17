@@ -65,8 +65,9 @@ export class CannonTower extends Tower {
     targetCheck(enemies) {
         // if already got target
         if (this.target) {
-            // check if target out of range
-            if ((this.pos.distanceTo(new THREE.Vector2(this.target.pos.x, this.target.pos.z))) >= this.range) {
+            // check if target out of range or target dead
+            if ((this.pos.distanceTo(new THREE.Vector2(this.target.pos.x, this.target.pos.z))) >= this.range
+             || this.target.life <= 0) {
                 this.target = null;
             }
             else {
@@ -87,7 +88,7 @@ export class CannonTower extends Tower {
         // else, search for target within range
         else {
             (enemies.toReversed()).some(enemy => {
-                if ((this.pos.distanceTo(new THREE.Vector2(enemy.pos.x, enemy.pos.z))) < this.range) {
+                if ((this.pos.distanceTo(new THREE.Vector2(enemy.pos.x, enemy.pos.z))) < this.range && enemy.life > 0) {
                     this.target = enemy;
                     return true;
                 }
@@ -139,8 +140,9 @@ export class MageTower extends Tower {
     targetCheck(enemies) {
         // if already got target
         if (this.target) {
-            // check if target out of range
-            if ((this.pos.distanceTo(new THREE.Vector2(this.target.pos.x, this.target.pos.z))) >= this.range) {
+            // check if target out of range or target dead
+            if ((this.pos.distanceTo(new THREE.Vector2(this.target.pos.x, this.target.pos.z))) >= this.range
+              || this.target.life <= 0) {
                 this.target = null;
             }
             else {
@@ -154,7 +156,7 @@ export class MageTower extends Tower {
         // else, search for target within range
         else {
             (enemies.toReversed()).some(enemy => {
-                if ((this.pos.distanceTo(new THREE.Vector2(enemy.pos.x, enemy.pos.z))) < this.range) {
+                if ((this.pos.distanceTo(new THREE.Vector2(enemy.pos.x, enemy.pos.z))) < this.range && enemy.life > 0) {
                     this.target = enemy;
                     return true;
                 }

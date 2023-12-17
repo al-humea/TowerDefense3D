@@ -3,6 +3,30 @@ import { OrbitControls } from './OrbitControls.js';
 
 //canva setup
 const cnv = document.getElementById("screen");
+// Création d'un contexte audio
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// Fonction pour charger un fichier audio
+function loadAudio(url) {
+    return fetch(url)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer));
+}
+
+// Jouer le son
+function playAudio(audioBuffer) {
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.loop = true;  
+    source.connect(audioContext.destination);
+    source.start(0);  
+}
+
+// Charger et jouer le fichier audio
+const audioUrl = './Music/musicbgd.mp3';  
+loadAudio(audioUrl).then(playAudio).catch(e => console.error(e));
+
+
 
 //renderer et camera
 const renderer = new THREE.WebGLRenderer({canvas:cnv, antialiasing:true});

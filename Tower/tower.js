@@ -1,6 +1,8 @@
 import {GLTFLoader} from "../GLTFLoader.js";
 import * as THREE from "../three.module.js";
 
+
+
 class Tower {
     static list = [];
     static scale = 0.95;
@@ -11,10 +13,11 @@ class Tower {
         this.range = range;
         this.target = null;
     }
+}
 
-    targetKilled(target) {
-        this.target = null;
-    }
+function playSound(soundFile) {
+    const sound = new Audio(soundFile);
+    sound.play();
 }
 
 export class CannonTower extends Tower {
@@ -50,7 +53,7 @@ export class CannonTower extends Tower {
                 scene.add(gltf.scene);
         });
     }
-
+    
     update(dt, enemies) {
         // takes care of fire cooldown
         if (this.cooldown < this.maxCooldown)
@@ -60,6 +63,12 @@ export class CannonTower extends Tower {
 
         // check for target
         this.targetCheck(enemies);
+
+            // Check if the tower is ready to fire
+        if (this.cooldown >= this.maxCooldown && this.target) {
+        playSound('./Music/canon.mp3'); // Play the cannon firing sound
+        this.cooldown = 0; 
+         }
     }
 
     targetCheck(enemies) {
@@ -70,13 +79,14 @@ export class CannonTower extends Tower {
                 this.target = null;
             }
             else {
-                // fire when cooldown is up (+ safecheck if target not already dead)
-                if (this.cooldown >= this.maxCooldown && this.target.life > 0) {
+                // fire when cooldown is up
+                if (this.cooldown >= this.maxCooldown) {
                     let offsetDirection = (new THREE.Vector2(this.target.pos.x, this.target.pos.z).sub(new THREE.Vector2(this.pos.x, this.pos.y))).normalize();
-                    let fireProjectile = new Projectile(0, this.target, this.scene, this, new THREE.Vector3(this.pos.x + offsetDirection.x*0.2,
+                    let fireProjectile = new Projectile(0, this.target, this.scene, new THREE.Vector3(this.pos.x + offsetDirection.x*0.2,
                                                                                                       1.1,
                                                                                                       this.pos.y + offsetDirection.y*0.2));
                     this.cooldown = 0;
+                    playSound('./Music/canon.mp3');
                 }
                 // rotate the cannon in direction to the target
                 this.cannon.lookAt(this.cannon.position.x + (this.cannon.position.x-this.target.pos.x),
@@ -134,6 +144,11 @@ export class MageTower extends Tower {
 
         // check for target
         this.targetCheck(enemies);
+        // Check if the tower is ready to fire
+        if (this.cooldown >= this.maxCooldown && this.target) {
+            playSound('./Muisc/mage.mp3'); 
+            this.cooldown = 0; 
+        }
     }
 
     targetCheck(enemies) {
@@ -146,8 +161,9 @@ export class MageTower extends Tower {
             else {
                 // fire when cooldown is up
                 if (this.cooldown >= this.maxCooldown) {
-                    let fireProjectile = new Projectile(1, this.target, this.scene, this, new THREE.Vector3(this.pos.x, 1.85, this.pos.y));
+                    let fireProjectile = new Projectile(1, this.target, this.scene, new THREE.Vector3(this.pos.x, 1.85, this.pos.y));
                     this.cooldown = 0;
+                    playSound('./Music/mage.mp3');
                 }
             }
         }
@@ -167,10 +183,9 @@ export class Projectile {
     static list = [];
     static geos = [new THREE.SphereGeometry(0.1), new THREE.DodecahedronGeometry(0.2)]
     static mats = [new THREE.MeshStandardMaterial ({color:"black"}), new THREE.MeshStandardMaterial ({color:"white"})]
-    constructor(type, target, scene, tower, startPos) {
+    constructor(type, target, scene, startPos) {
         this.type = type;
         this.target = target;
-        this.parentTower = tower;
         this.targetLastPos = target.pos.clone();
         this.progress = 0;
         switch (type) {
@@ -234,9 +249,7 @@ export class Projectile {
         // if target reached
         if (this.progress >= 1) {
             if (this.target) {
-                let isDead = this.target.takedmg(this.damage);
-                if (isDead == 0)
-                    this.parentTower.targetKilled(this.target);
+                this.target.takedmg(this.damage)
             }
             Projectile.list.splice(Projectile.list.indexOf(this), 1);
             this.scene.remove(this.mesh);

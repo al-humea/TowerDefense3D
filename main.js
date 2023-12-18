@@ -53,9 +53,9 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 4.0);
 directionalLight.position.y = 4;
 directionalLight.position.z = 3;
 directionalLight.castShadow = true;
-const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
+//const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
 scene.add(directionalLight);
-scene.add(helper);
+//scene.add(helper);
 
 //map temporaire
 import {Map} from "./Map/map.js"
@@ -74,7 +74,7 @@ const botCheckpoints = midCheckpoints.map((x, i)=>{
 });
 
 //debug showing middlecheckpoints
-const lineMat = new THREE.LineBasicMaterial({
+/*const lineMat = new THREE.LineBasicMaterial({
     color:0xFF0000,
     linewidth:1,
 })
@@ -82,7 +82,7 @@ let lineGeo = null;
 midCheckpoints.forEach((x)=>{
     lineGeo = new THREE.BufferGeometry().setFromPoints([x, new THREE.Vector3(x.x, x.y+spawn[1], x.z)]);
     scene.add(new THREE.Line(lineGeo, lineMat));
-});
+});*/
 
 //Enemies
 import { Spawner } from "./Enemy/enemy.js";

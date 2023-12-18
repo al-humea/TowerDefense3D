@@ -66,7 +66,7 @@ export class CannonTower extends Tower {
 
             // Check if the tower is ready to fire
         if (this.cooldown >= this.maxCooldown && this.target) {
-        playSound('./Music/canon.mp3'); // Play the cannon firing sound
+        playSound('./Music/canon.mp3',0.2); // Play the cannon firing sound
         this.cooldown = 0; 
          }
     }
@@ -86,7 +86,7 @@ export class CannonTower extends Tower {
                                                                                                       1.1,
                                                                                                       this.pos.y + offsetDirection.y*0.2));
                     this.cooldown = 0;
-                    playSound('./Music/canon.mp3');
+                    playSound('./Music/canon.mp3',0.1);
                 }
                 // rotate the cannon in direction to the target
                 this.cannon.lookAt(this.cannon.position.x + (this.cannon.position.x-this.target.pos.x),
@@ -146,7 +146,7 @@ export class MageTower extends Tower {
         this.targetCheck(enemies);
         // Check if the tower is ready to fire
         if (this.cooldown >= this.maxCooldown && this.target) {
-            playSound('./Muisc/mage.mp3'); 
+            playSound('./Muisc/mage.mp3',0.3); 
             this.cooldown = 0; 
         }
     }
@@ -163,7 +163,7 @@ export class MageTower extends Tower {
                 if (this.cooldown >= this.maxCooldown) {
                     let fireProjectile = new Projectile(1, this.target, this.scene, new THREE.Vector3(this.pos.x, 1.85, this.pos.y));
                     this.cooldown = 0;
-                    playSound('./Music/mage.mp3');
+                    playSound('./Music/mage.mp3',0.3);
                 }
             }
         }

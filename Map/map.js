@@ -1,3 +1,4 @@
+import {GLTFLoader} from "../GLTFLoader.js";
 import * as THREE from '../three.module.js'
 
 /*
@@ -196,7 +197,7 @@ export class Map {
                 this.plane.position.z = 2.5 - i;
                 this.plane.rotation.x = THREE.MathUtils.degToRad(-90);
                 this.plane.receiveShadow = true;
-                this.scene.add(this.plane);
+                //this.scene.add(this.plane);
                 this.planeList.push(this.plane);
             }
         }
@@ -204,6 +205,148 @@ export class Map {
         this.checkpoints = [this.planeList[87].position, this.planeList[47].position,
                             this.planeList[42].position, this.planeList[12].position,
                             this.planeList[19].position];
+
+        let mapData = [0, 0, 0, 0, 0, 0, 8, 8, 9, 9,
+                       2, 2, 2, 2, 2, 2, 2, 4, 8, 8,
+                       7, 0, 0, 0, 0, 0, 0, 1, 0, 8,
+                       9, 8, 0, 7, 9, 0, 7, 1, 0, 0,
+                       7, 0, 0, 0, 8, 0, 0, 1, 0, 0,
+                       0, 0, 5, 2, 2, 2, 2, 3, 0, 8,
+                       8, 8, 1, 0, 0, 7, 0, 0, 7, 9,
+                       9, 8, 1, 0, 0, 0, 0, 0, 9, 8,
+                       9, 0, 6, 2, 2, 2, 2, 2, 2, 2,
+                       9, 8, 0, 7, 0, 0, 0, 7, 0, 0]
+
+        
+        let offsetY = -0.2;
+        this.loader = new GLTFLoader();
+        this.loader.load("./Map/snow_tile.glb",
+        function (gltf){
+          for (let z = 0; z < 10; z++) {
+            for (let x = 0; x < 10; x++) {
+              if (mapData[x + z*10] == 0) {
+                let model = gltf.scene.clone();
+                model.position.set(-4.5+x, offsetY, -6.5+z);
+                model.traverse((node)=>{
+                  if (node.isMesh) node.receiveShadow = true;
+                });
+                scene.add(model);
+              }
+            }
+          }
+        });
+
+        this.loader.load("./Map/snow_tile_straight.glb",
+        function (gltf){
+          for (let z = 0; z < 10; z++) {
+            for (let x = 0; x < 10; x++) {
+              if (1 <= mapData[x + z*10] && mapData[x + z*10] <= 2) {
+                let model = gltf.scene.clone();
+                switch(mapData[x + z*10]) {
+                  case 1:
+                    break;
+                  case 2:
+                    model.rotateY(THREE.MathUtils.degToRad(90))
+                    break;
+                }
+                model.position.set(-4.5+x, offsetY, -6.5+z);
+                model.traverse((node)=>{
+                  if (node.isMesh) node.receiveShadow = true;
+                });
+                scene.add(model);
+              }
+            }
+          }
+        });
+
+        this.loader.load("./Map/snow_tile_cornerSquare.glb",
+        function (gltf){
+          for (let z = 0; z < 10; z++) {
+            for (let x = 0; x < 10; x++) {
+              if (3 <= mapData[x + z*10] && mapData[x + z*10] <= 6) {
+                let model = gltf.scene.clone();
+                switch(mapData[x + z*10]) {
+                  case 3:
+                    break;
+                  case 4:
+                    model.rotateY(THREE.MathUtils.degToRad(90))
+                    break;
+                  case 5:
+                    model.rotateY(THREE.MathUtils.degToRad(180))
+                    break;
+                  case 6:
+                    model.rotateY(THREE.MathUtils.degToRad(270))
+                    break;
+                }
+                model.position.set(-4.5+x, offsetY, -6.5+z);
+                model.traverse((node)=>{
+                  if (node.isMesh) node.receiveShadow = true;
+                });
+                scene.add(model);
+              }
+            }
+          }
+        });
+
+        this.loader.load("./Map/snow_tile_rock.glb",
+        function (gltf){
+          for (let z = 0; z < 10; z++) {
+            for (let x = 0; x < 10; x++) {
+              if (mapData[x + z*10] == 7) {
+                let model = gltf.scene.clone();
+                model.position.set(-4.5+x, offsetY, -6.5+z);
+                //shadow casting on scene
+                model.traverse((node)=>{
+                    if (node.isMesh) node.castShadow = true;
+                });
+                model.traverse((node)=>{
+                  if (node.isMesh) node.receiveShadow = true;
+                });
+                scene.add(model);
+              }
+            }
+          }
+        });
+
+        this.loader.load("./Map/snow_tile_treeDouble.glb",
+        function (gltf){
+          for (let z = 0; z < 10; z++) {
+            for (let x = 0; x < 10; x++) {
+              if (mapData[x + z*10] == 8) {
+                let model = gltf.scene.clone();
+                model.position.set(-4.5+x, offsetY, -6.5+z);
+                //shadow casting on scene
+                model.traverse((node)=>{
+                    if (node.isMesh) node.castShadow = true;
+                });
+                model.traverse((node)=>{
+                  if (node.isMesh) node.receiveShadow = true;
+                });
+                scene.add(model);
+              }
+            }
+          }
+        });
+
+        this.loader.load("./Map/snow_tile_treeQuad.glb",
+        function (gltf){
+          for (let z = 0; z < 10; z++) {
+            for (let x = 0; x < 10; x++) {
+              if (mapData[x + z*10] == 9) {
+                let model = gltf.scene.clone();
+                model.position.set(-4.5+x, offsetY, -6.5+z);
+                //shadow casting on scene
+                model.traverse((node)=>{
+                    if (node.isMesh) node.castShadow = true;
+                });
+                model.traverse((node)=>{
+                  if (node.isMesh) node.receiveShadow = true;
+                });
+                scene.add(model);
+              }
+            }
+          }
+        });
     }
     get spawn(){
         return (this.spawn);

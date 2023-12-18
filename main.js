@@ -59,8 +59,26 @@ const spawner = new Spawner(scene, enemies, spawn, midCheckpoints, topCheckpoint
 //Towers
 import { Projectile, CannonTower, MageTower } from './Tower/tower.js';
 const towers = [];
-towers.push(new MageTower(-3.5, -0.5, scene)); //tmp debug tower
-towers.push(new CannonTower(3.5, -2.5, scene));
+
+let towerPos= [0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
+               0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+               2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+               0, 2, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 2, 0, 0, 0, 0]
+
+for (let z = 0; z < 10; z++) {
+  for (let x = 0; x < 10; x++) {
+    if (towerPos[x + z*10] == 1)
+      towers.push(new CannonTower(-4.5+x, -6.5+z, scene));
+    if (towerPos[x + z*10] == 2)
+      towers.push(new MageTower(-4.5+x, -6.5+z, scene));
+  }
+}
 
 //main
 let delta = 0;

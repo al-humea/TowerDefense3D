@@ -16,8 +16,24 @@ class Enemy{
     this.checkpoints = checkpoints.map((e)=> new THREE.Vector3(e.x, y, e.z));
     this.life = 1;
     this.direction = new THREE.Vector3();
-    this.randVariation = Math.random();
+    this.randVariation = Math.random(); 
+    this.playSound('./Music/ennemy.wav'); 
+    
+   
   }
+  playSound(soundFile) {
+    const listener = new THREE.AudioListener();
+    this.scene.add(listener);
+    const sound = new THREE.Audio(listener);
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load(soundFile, (buffer) => {
+      sound.setBuffer(buffer);
+      sound.setLoop(false);
+      sound.setVolume(0.5);
+      sound.play();
+    });
+  }
+
   animate(delta){
     this.internal_clock += delta;
     this.pos.setY(Math.sin(this.internal_clock * 5 * this.randVariation) * 0.025 + 0.35 );
@@ -43,6 +59,8 @@ class Enemy{
     return 0;
   }
 }
+
+
 
 class purpleEnemy extends Enemy{
   constructor(x, y, z, scene, checkpoints =[], enemies =[]){

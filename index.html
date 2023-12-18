@@ -16,13 +16,19 @@ canvas {
     width: 800px;
     background-color: beige;
 }
+button {
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
     </style>
 </head>
 <body>
     <canvas id="screen" width="600" height="600"></canvas>
         <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">
   
-        <button type="reset" style="display: block; margin: 0 auto; padding-left: 4px;margin-left: 1px;margin-right: 860px;margin-top: 150px;">
+        <button type="reset" style="position: relative; right: -50%; transform: translateX(-50%)">
           <a href="index.html">Reset</a>
         </button>
 </body>

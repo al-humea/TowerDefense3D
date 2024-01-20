@@ -1,45 +1,21 @@
-import * as THREE from './three.module.js'
-import { OrbitControls } from './OrbitControls.js';
+import * as THREE from './Addons/three.module.js'
+import { OrbitControls } from './Addons/OrbitControls.js';
 
-//canva setup
 const cnv = document.getElementById("screen");
-// Création d'un contexte audio
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-// Fonction pour charger un fichier audio
-function loadAudio(url) {
-    return fetch(url)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer));
-}
-
-// Jouer le son
-function playAudio(audioBuffer) {
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffer;
-  source.loop = true;
-
-  // Créer un GainNode pour contrôler le volume
-  const gainNode = audioContext.createGain();
-  // Augmenterle volume, par exemple, 1.5 pour 50% plus fort
-  gainNode.gain.value = 1.5;
-
-  // Connecter la source au GainNode, puis le GainNode à la destination
-  source.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  source.start(0);
-}
-
-// Charger et jouer le fichier audio
-const audioUrl = './Music/theme.mp3';  
-loadAudio(audioUrl).then(playAudio).catch(e => console.error(e));
-
-
-
-//renderer et camera
 const renderer = new THREE.WebGLRenderer({canvas:cnv, antialiasing:true});
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight);
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight);
+}
+window.addEventListener("resize", onWindowResize, false);
+
 const camera = new THREE.PerspectiveCamera(75, cnv.width/cnv.height, 0.1, 1000);
 const scene = new THREE.Scene();
 camera.position.z = 5;
@@ -49,15 +25,19 @@ const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
 //lumières
-const directionalLight = new THREE.DirectionalLight(0xffffff, 4.0);
-directionalLight.position.y = 4;
-directionalLight.position.z = 3;
-directionalLight.castShadow = true;
-//const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
-scene.add(directionalLight);
-//scene.add(helper);
+const ambiLight = new THREE.AmbientLight(0xffffff, 0.1);
+scene.add(ambiLight);
+const direLight = new THREE.DirectionalLight(0xffffff, 1.3);
+direLight.position.y = 4;
+direLight.position.z = 3;
+direLight.castShadow = true;
+const hemiLight = new THREE.HemisphereLight(0xffffff,0xfffafa, 0.25);
+hemiLight.position.y = 4;
+hemiLight.position.z = 3;
+scene.add(hemiLight);
+scene.add(direLight);
 
-//map temporaire
+//MAP
 import {Map} from "./Map/map.js"
 const map = new Map(scene);
 const spawn = [map.spawn.x-0.15, 0.3, map.spawn.z + 0.15];//xyz spawn
@@ -119,13 +99,10 @@ let last_time = 0;
 function display(time){
     delta = (time - last_time) * 0.001;//to_s
     last_time = time;
-    //update enemies list and move enemies
     spawner.spawn(delta);
     enemies.forEach((e)=>e.move(delta));
     towers.forEach((e)=>e.update(delta, enemies));
     Projectile.update(delta);
-    //update projectiles
-    //disp gui
     renderer.render(scene, camera);
 
     requestAnimationFrame(display);

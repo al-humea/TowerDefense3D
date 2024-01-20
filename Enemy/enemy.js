@@ -1,5 +1,5 @@
-import {GLTFLoader} from "../GLTFLoader.js"
-import * as THREE from "../three.module.js"
+import {GLTFLoader} from "../Addons/GLTFLoader.js"
+import * as THREE from "../Addons/three.module.js"
 
 class Enemy{
   static index = 0;
@@ -17,21 +17,7 @@ class Enemy{
     this.life = 1;
     this.direction = new THREE.Vector3();
     this.randVariation = Math.random(); 
-    this.playSound('./Music/ennemy.wav'); 
-    
-   
-  }
-  playSound(soundFile) {
-    const listener = new THREE.AudioListener();
-    this.scene.add(listener);
-    const sound = new THREE.Audio(listener);
-    const audioLoader = new THREE.AudioLoader();
-    audioLoader.load(soundFile, (buffer) => {
-      sound.setBuffer(buffer);
-      sound.setLoop(false);
-      sound.setVolume(0.5);
-      sound.play();
-    });
+    // this.playSound('./Music/ennemy.wav'); 
   }
 
   animate(delta){
@@ -77,7 +63,13 @@ class purpleEnemy extends Enemy{
         gltf.scene.position.setZ(z);
         //shadow casting on scene
         gltf.scene.traverse((node)=>{
-            if (node.isMesh) node.castShadow = true;
+            if (node.isMesh){
+              node.castShadow = true;
+              node.receiveShadow = true;
+              node.depthPacking = THREE.RGBADepthPacking;
+              node.material.roughness = 1.0;
+              node.material.metalness = 0.0;
+            }
         });
         //add model to scene
         scene.add(gltf.scene);
@@ -101,7 +93,13 @@ class yellowEnemy extends Enemy{
         gltf.scene.position.setZ(z);
         //shadow casting on scene
         gltf.scene.traverse((node)=>{
-            if (node.isMesh) node.castShadow = true;
+          if (node.isMesh){
+            node.castShadow = true;
+            node.receiveShadow = true;
+            node.depthPacking = THREE.RGBADepthPacking;
+            node.material.roughness = 1.0;
+            node.material.metalness = 0.0;
+          }
         });
         //add model to scene
         scene.add(gltf.scene);

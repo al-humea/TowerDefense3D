@@ -1,181 +1,5 @@
-import {GLTFLoader} from "../GLTFLoader.js";
-import * as THREE from '../three.module.js'
-
-/*
-export class Map {
-
-  constructor(scene) {
-    this.scene = scene;
-    this.tiles = [];
-  }
-
-  async init() {
-
-    // Load tile assets asynchronously
-    await this.loadTiles(); 
-
-    // Cache tile geometries
-    this.createTileGeometries();
-
-    // Add tiles to scene once loaded
-    this.addTilesToScene();
-  }
-
-  // Map data
-  mapData = [
-    [0, 1, 0],
-    [1, 2, 1],
-    [0, 1, 0] 
-  ];
-
-  // Tile types
-  tileTypes = {
-    0: 'snow',
-    1: 'snowSquare',
-    2: 'snowStraight'
-  };
-
-  async loadTiles() {
-    this.tiles = await Promise.all(
-      Object.values(this.tileTypes).map(type => {
-        return this.loadTile(type)  
-      })
-    );
-  }
-
-  async loadTile(type) {
-    return new THREE.GLTFLoader().load(`${type}.glb`, this.scene);
-  }
-
-createTileGeometries() {
-  this.tiles.forEach(tile => {
-    tile.geometry = new THREE.BufferGeometry().fromGeometry(tile.geometry);
-  });
-}
-  addTilesToScene() {
-
-    for (let y = 0; y < this.mapData.length; y++) {
-      for (let x = 0; x < this.mapData[y].length; x++) {
-
-        const tile = this.getTile(this.mapData[y][x]);
-
-        // Add to container for batch update
-        this.tilesContainer.add(tile);
-
-      }
-    }
-
-    // Add container to scene
-    this.scene.add(this.tilesContainer);
-
-  }
-
-  get spawn() {
-    return this.tiles[0].position;
-  }
-
-  getTile(type) {
-    return this.tiles[this.tileTypes[type]];
-  }
-
-}
-
-*/
-
-
-// // Checkpoints ici ou bien dans d
-// export class Map {
-// // Map data 
-// const mapData = [
-//   [0, 0, 0, 1, 0],
-//   [1, 1, 2, 2, 1], 
-//   [0, 0, 0, 0, 0]
-// ];
-
-// // Tiles
-// const tileTypes = {
-//   0: 'snow_tile',
-//   1: 'snow_tile_cornerSquare',
-//   2: 'snow_tile_straight'
-// };
-
-//   constructor(scene) {
-
-//     this.scene = scene;
-
-//     // Array to hold tile mesh objects
-//     this.tiles = []; 
-
-//     // Spawn 
-//     this.spawn = [0, 0, 0]; 
-
-//     // taille des tiles et grid
-//     const tileWidth = 1;
-//     const tileHeight = 1;
-//     const gridWidth = 10;
-//     const gridHeight = 10;
-
-//     for(let i = 0; i < gridHeight; i++) {
-//       for(let j = 0; j < gridWidth; j++) {
-
-//   for(let i = 0; i < gridHeight; i++) {
-//     for(let j = 0; j < gridWidth; j++) {
-
-//       // Get tile type 
-//       const type = tileTypes[mapData[i][j]];
-//       const tile = this.createTile(type);
-
-//         // Position des tiles
-//         tile.position.x = j * tileWidth - (gridWidth/2) * tileWidth; 
-//         tile.position.z = i * tileHeight - (gridHeight/2) * tileHeight;
-
-//         // Add dans la scene
-//         this.scene.add(tile);
-
-//         // Save 
-//         this.tiles.push(tile);
-
-//       }
-//     }
-
-//     // Set au spawn et checkpoints si besoin?
-//     this.spawn = this.tiles[0].position;
-
-//     );
-
-//   }
-
-//   createTile(type) {
-
-//     // Loading des fichiers 3D glb 
-//     let tile;
-//     switch(type) {
-//       case 'snow_tile':
-//         tile = new THREE.GLTFLoader().load('snow_tile.glb', scene); 
-//         break;
-
-//       case 'snow_tile_cornerSquare': 
-//         tile = new THREE.GLTFLoader().load('snow_tile_cornerSquare.glb', scene);
-//         break;
-
-//       case 'snow_tile_straight':
-//         tile = new THREE.GLTFLoader().load('snow_tile_straight.glb', scene);
-//         break;
-//     }
-
-//     return tile;
-
-//   }
-
-//   // Getters
-//   get spawn() {
-//     return this.spawn;
-//   }
-
-// }
-
-
-
+import {GLTFLoader} from "../Addons/GLTFLoader.js";
+import * as THREE from '../Addons/three.module.js'
 
 export class Map {
     planeGeo = new THREE.PlaneGeometry(0.90, 0.90, 10, 10);
@@ -228,7 +52,12 @@ export class Map {
                 let model = gltf.scene.clone();
                 model.position.set(-4.5+x, offsetY, -6.5+z);
                 model.traverse((node)=>{
-                  if (node.isMesh) node.receiveShadow = true;
+                  if (node.isMesh){
+                    node.receiveShadow = true;
+                    node.depthPacking = THREE.RGBADepthPacking;
+                    node.material.roughness = 1.0;
+                    node.material.metalness = 0.0;
+                  }
                 });
                 scene.add(model);
               }
@@ -251,7 +80,12 @@ export class Map {
                 }
                 model.position.set(-4.5+x, offsetY, -6.5+z);
                 model.traverse((node)=>{
-                  if (node.isMesh) node.receiveShadow = true;
+                  if (node.isMesh){
+                    node.receiveShadow = true;
+                    node.depthPacking = THREE.RGBADepthPacking;
+                    node.material.roughness = 1.0;
+                    node.material.metalness = 0.0;
+                  }
                 });
                 scene.add(model);
               }
@@ -280,7 +114,12 @@ export class Map {
                 }
                 model.position.set(-4.5+x, offsetY, -6.5+z);
                 model.traverse((node)=>{
-                  if (node.isMesh) node.receiveShadow = true;
+                  if (node.isMesh){
+                    node.receiveShadow = true;
+                    node.depthPacking = THREE.RGBADepthPacking;
+                    node.material.roughness = 1.0;
+                    node.material.metalness = 0.0;
+                  }
                 });
                 scene.add(model);
               }
@@ -297,10 +136,13 @@ export class Map {
                 model.position.set(-4.5+x, offsetY, -6.5+z);
                 //shadow casting on scene
                 model.traverse((node)=>{
-                    if (node.isMesh) node.castShadow = true;
-                });
-                model.traverse((node)=>{
-                  if (node.isMesh) node.receiveShadow = true;
+                  if (node.isMesh){
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                    node.depthPacking = THREE.RGBADepthPacking;
+                    node.material.roughness = 1.0;
+                    node.material.metalness = 0.0;
+                  }
                 });
                 scene.add(model);
               }
@@ -317,10 +159,13 @@ export class Map {
                 model.position.set(-4.5+x, offsetY, -6.5+z);
                 //shadow casting on scene
                 model.traverse((node)=>{
-                    if (node.isMesh) node.castShadow = true;
-                });
-                model.traverse((node)=>{
-                  if (node.isMesh) node.receiveShadow = true;
+                  if (node.isMesh){
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                    node.depthPacking = THREE.RGBADepthPacking;
+                    node.material.roughness = 1.0;
+                    node.material.metalness = 0.0;
+                  }
                 });
                 scene.add(model);
               }
@@ -337,10 +182,13 @@ export class Map {
                 model.position.set(-4.5+x, offsetY, -6.5+z);
                 //shadow casting on scene
                 model.traverse((node)=>{
-                    if (node.isMesh) node.castShadow = true;
-                });
-                model.traverse((node)=>{
-                  if (node.isMesh) node.receiveShadow = true;
+                  if (node.isMesh){
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                    node.depthPacking = THREE.RGBADepthPacking;
+                    node.material.roughness = 1.0;
+                    node.material.metalness = 0.0;
+                  }
                 });
                 scene.add(model);
               }

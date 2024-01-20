@@ -22,9 +22,9 @@ const scene = new THREE.Scene();
 const loader = new THREE.CubeTextureLoader();
 loader.setPath( '/skybox/' );
 const textureCube = loader.load([
-  'left.png', 'right.png',//
+  'right.png', 'left.png',//
   'top.png', 'bottom.png',
-  'back.png', 'front.png'
+  'front.png', 'back.png'
 ]);
 
 scene.background = textureCube;

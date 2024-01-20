@@ -188,7 +188,7 @@ export class MageTower extends Tower {
 export class Projectile {
     static list = [];
     static geos = [new THREE.SphereGeometry(0.1), new THREE.DodecahedronGeometry(0.2)]
-    static mats = [new THREE.MeshPhongMaterial ({color:"black"}), new THREE.MeshPhongMaterial]
+    static mats = [new THREE.MeshPhongMaterial ({color:"grey"}), new THREE.MeshPhongMaterial]
     constructor(type, target, scene, tower, startPos) {
         this.type = type;
         this.target = target;

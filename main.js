@@ -2,7 +2,7 @@ import * as THREE from './Addons/three.module.js'
 import { OrbitControls } from './Addons/OrbitControls.js';
 
 const cnv = document.getElementById("screen");
-const renderer = new THREE.WebGLRenderer({canvas:cnv, antialiasing:true});
+const renderer = new THREE.WebGLRenderer({canvas:cnv, antialiasing:true, alpha:true});
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -18,6 +18,17 @@ window.addEventListener("resize", onWindowResize, false);
 
 const camera = new THREE.PerspectiveCamera(75, cnv.width/cnv.height, 0.1, 1000);
 const scene = new THREE.Scene();
+
+const loader = new THREE.CubeTextureLoader();
+loader.setPath( '/skybox/' );
+const textureCube = loader.load([
+  'left.png', 'right.png',//
+  'top.png', 'bottom.png',
+  'back.png', 'front.png'
+]);
+
+scene.background = textureCube;
+
 camera.position.z = 5;
 camera.position.y = 5;
 camera.rotation.x = THREE.MathUtils.degToRad(-45);
@@ -31,7 +42,8 @@ const direLight = new THREE.DirectionalLight(0xffffff, 1.3);
 direLight.position.y = 4;
 direLight.position.z = 3;
 direLight.castShadow = true;
-const hemiLight = new THREE.HemisphereLight(0xffffff,0xfffafa, 0.25);
+direLight.shadow.normalBias = 0.1;
+const hemiLight = new THREE.HemisphereLight(0xffffff,0xfffafa, 0.4);
 hemiLight.position.y = 4;
 hemiLight.position.z = 3;
 scene.add(hemiLight);

@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tower Defense 3D</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <script type="module" src="./Addons/three.module.js"></script>
-    <script type="module" src="main.js"></script>
-    <script type="module" src="./Addons/GLTFLoader.js"></script>
-    <script type="module" src="./Enemy/enemy.js"></script>
     <style>
       body{
         background-color: #87CEEB;
@@ -23,6 +19,15 @@
     </style>
 </head>
 <body>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../Addons/three.module.js",
+                "three/addons/": "../Addons/"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
     <link rel="shortcut icon" href="icon.png">
     <canvas id="screen" width="600" height="600"></canvas>
 </body>

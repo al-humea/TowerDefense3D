@@ -17,6 +17,14 @@ function onWindowResize() {
 window.addEventListener("resize", onWindowResize, false);
 
 const camera = new THREE.PerspectiveCamera(75, cnv.width/cnv.height, 0.1, 1000);
+
+camera.position.z = 5;
+camera.position.y = 5;
+camera.rotation.x = THREE.MathUtils.degToRad(-45);
+const controls = new OrbitControls( camera, renderer.domElement );
+controls.update();
+controls.enabled = false;
+
 const scene = new THREE.Scene();
 
 const loader = new THREE.CubeTextureLoader();
@@ -29,11 +37,12 @@ const textureCube = loader.load([
 
 scene.background = textureCube;
 
-camera.position.z = 5;
-camera.position.y = 5;
-camera.rotation.x = THREE.MathUtils.degToRad(-45);
-const controls = new OrbitControls( camera, renderer.domElement );
-controls.update();
+// Create the menu scene
+import {Menu} from "./Menu/menu.js"
+const menuScene = new Menu(scene, camera);
+window.addEventListener("pointermove", menuScene.onPointerMove);
+window.addEventListener("pointerup", ev => menuScene.onPointerUp(ev));
+
 
 //lumières
 const ambiLight = new THREE.AmbientLight(0xffffff, 0.1);
@@ -108,14 +117,27 @@ for (let z = 0; z < 10; z++) {
 //main
 let delta = 0;
 let last_time = 0;
+let state = 0; // 0-Menu <> 1-Game
 function display(time){
     delta = (time - last_time) * 0.001;//to_s
     last_time = time;
-    spawner.spawn(delta);
-    enemies.forEach((e)=>e.move(delta));
-    towers.forEach((e)=>e.update(delta, enemies));
-    Projectile.update(delta);
-    renderer.render(scene, camera);
+    switch(state) {
+      case 0:
+        menuScene.interaction();
+        renderer.render(menuScene, camera);
+        if (menuScene.buttonClicked) {
+          state = 1;
+          controls.enabled = true;
+        }
+        break;
+      case 1:
+        spawner.spawn(delta);
+        enemies.forEach((e)=>e.move(delta));
+        towers.forEach((e)=>e.update(delta, enemies));
+        Projectile.update(delta);
+        renderer.render(scene, camera);
+        break;
+    }
 
     requestAnimationFrame(display);
 }

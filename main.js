@@ -25,7 +25,11 @@ const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 controls.enabled = false;
 
-const scene = new THREE.Scene();
+// Create the menu scene
+import {Menu} from "./Menu/menu.js"
+const scene = new Menu(new THREE.Scene(), camera);
+window.addEventListener("pointermove", scene.onPointerMove);
+window.addEventListener("pointerup", ev => scene.onPointerUp(ev));
 
 const loader = new THREE.CubeTextureLoader();
 loader.setPath( '/skybox/' );
@@ -37,11 +41,6 @@ const textureCube = loader.load([
 
 scene.background = textureCube;
 
-// Create the menu scene
-import {Menu} from "./Menu/menu.js"
-const menuScene = new Menu(scene, camera);
-window.addEventListener("pointermove", menuScene.onPointerMove);
-window.addEventListener("pointerup", ev => menuScene.onPointerUp(ev));
 
 
 //lumières
@@ -123,9 +122,9 @@ function display(time){
     last_time = time;
     switch(state) {
       case 0:
-        menuScene.interaction();
-        renderer.render(menuScene, camera);
-        if (menuScene.buttonClicked) {
+        scene.interaction();
+        renderer.render(scene, camera);
+        if (scene.buttonClicked) {
           state = 1;
           controls.enabled = true;
         }

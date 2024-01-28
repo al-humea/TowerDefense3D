@@ -18,8 +18,8 @@ window.addEventListener("resize", onWindowResize, false);
 
 const camera = new THREE.PerspectiveCamera(75, cnv.width/cnv.height, 0.1, 1000);
 
-camera.position.z = 5;
-camera.position.y = 5;
+camera.position.z = 25;
+camera.position.y = 25;
 camera.rotation.x = THREE.MathUtils.degToRad(-45);
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
@@ -116,7 +116,7 @@ for (let z = 0; z < 10; z++) {
 //main
 let delta = 0;
 let last_time = 0;
-let state = 0; // 0-Menu <> 1-Game
+let state = 0; // 0-Menu <> 1-Transition <> 2-Game
 function display(time){
     delta = (time - last_time) * 0.001;//to_s
     last_time = time;
@@ -126,10 +126,18 @@ function display(time){
         renderer.render(scene, camera);
         if (scene.buttonClicked) {
           state = 1;
-          controls.enabled = true;
         }
         break;
       case 1:
+        camera.position.y -= 30*delta;
+        camera.position.z -= 30*delta;
+        renderer.render(scene, camera);
+        if (camera.position.y <= 5) {
+          state = 2;
+          controls.enabled = true;
+        }
+        break;
+      case 2:
         spawner.spawn(delta);
         enemies.forEach((e)=>e.move(delta));
         towers.forEach((e)=>e.update(delta, enemies));

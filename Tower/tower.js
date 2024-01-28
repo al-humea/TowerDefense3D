@@ -135,6 +135,7 @@ export class MageTower extends Tower {
         });
         // bullet visible even before firing, "growing" above the tower depending of its cooldown
         this.bullet = new THREE.Mesh(Projectile.geos[1], Projectile.mats[1]);
+        this.bullet.scale.setScalar(0);
         this.bullet.position.set(x, 1.85, z);
         scene.add(this.bullet);
     }
